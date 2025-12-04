@@ -22,13 +22,13 @@ class ShapeCollection():
     def get_total_area(self):
         sum = 0
         for shape in self._shapes:
-            sum = shape.area()
+            sum += shape.area()
         return sum
     
     def get_total_perimeter(self):
         sum = 0
         for shape in self._shapes:
-            sum = shape.perimeter()
+            sum += shape.perimeter()
         return sum
 
     def get_largest_shape(self):
