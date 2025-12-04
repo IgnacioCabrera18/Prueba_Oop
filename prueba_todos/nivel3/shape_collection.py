@@ -34,12 +34,20 @@ class ShapeCollection():
     def get_largest_shape(self):
         if self._shapes == []:
             return None
-        return max(self._shapes.area())
+        largest = self._shapes[0]
+        for shape in self._shapes:
+            if shape.__gt__(largest):
+                largest = shape
+        return largest
 
     def get_smallest_shape(self):
         if self._shapes == []:
             return None
-        min(self._shapes.area())
+        smallest = self._shapes[0]
+        for shape in self._shapes:
+            if shape.__lt__(smallest):
+                smallest = shape
+        return smallest
 
     def __len__(self):
         return len(self._shapes)
