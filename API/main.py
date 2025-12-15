@@ -1,30 +1,39 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from typing import List
-from model import UserCreateSchema, UserResponseShema
+
+from model import UserCreateSchema, UserResponseSchema
 from service import UserService
 from persistence import UserRepository
 
 user_repository = UserRepository()
+
+
 user_service = UserService(repository=user_repository)
 
-app = FastAPI()
 
-@app.get("/")
+app = FastAPI(
+    title="API de Usuarios con Arquitectura en Capas",
+    description="Un ejemplo de cómo estructurar una API en capas.",
+    version="1.0.0"
+)
+
+@app.get("/", tags=["General"])
 def home():
-    return {"mensaje": "Hola buenas tardes"}
+    return {"mensaje": "API de Usuarios funcionando"}
 
-
-@app.get("/users", response_model=List[UserResponseShema])
-def get_all_users():
+@app.get("/users", response_model=List[UserResponseSchema], tags=["Usuarios"])
+def get_all_user():
     users = user_service.get_users()
-    return user
+    return users
 
-@app.post("/users", response_model=UserResponseShema)
-def create_user(user):
+@app.post("/users", response_model=UserResponseSchema, status_code=201, tags=["Usuarios"])
+def create_users(user: UserCreateSchema):
     new_user = user_service.create_user(user_data=user)
     return new_user
-    
 
-@app.delete("/users/{user_id}")
+@app.delete("/users/{user_id}", tags=["Usuarios"])
 def delete_user(user_id: int):
-    delete = user_service.delete_users(user_id=user_id)
+    deleted = user_service.delete_users(user_id)
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    return {"mensaje": f"Usuario {user_id} eliminado con éxito"}

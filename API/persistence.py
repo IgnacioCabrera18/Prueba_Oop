@@ -2,7 +2,7 @@ import sqlite3
 from typing import List, Dict, Any
 
 class UserRepository:
-    def __init__(self, db_name: str = "users_example.db"):
+    def __init__(self, db_name: str = "usuarios_api.db"):
         self.db_name = db_name
         self._create_table()
 
@@ -13,10 +13,9 @@ class UserRepository:
 
     def _create_table(self):
         conn = self._get_connection()
-        cursor = conn.cursor()
-        cursor.execute("""
-            CREATE TABLE IF NOT EXISTS users (
-                id INTEGER PRIMARY KEY AUTOINCREMENTE,
+        conn.execute("""
+            CREATE TABLE IF NOT EXISTS usuarios (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT NOT NULL,
                 age INTEGER NOT NULL,
                 rol TEXT NOT NULL
@@ -26,35 +25,35 @@ class UserRepository:
         conn.close()
 
     def add(self, name: str, age: int, rol: str) -> int:
-        conn = self._get_connection
+        conn = self._get_connection()
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO users (name, age, rol) VALUES(?, ?, ?)", (name, age, rol))
+        cursor.execute("INSERT INTO usuarios (name, age, rol) VALUES (?, ?, ?)", (name, age, rol))
         conn.commit()
-        last_id = cursor.lastrowid
+        ultimo_id = cursor.lastrowid
         conn.close()
-        return last_id
+        return ultimo_id
 
     def get_all(self) -> List[Dict[str, Any]]:
-        conn = self._get_connection
+        conn = self._get_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM users")
+        cursor.execute("SELECT * FROM usuarios")
         data = [dict(register) for register in cursor.fetchall()]
         conn.close()
         return data
 
-    def get_by_id(self, user_id: int) -> Dict[str, Any]:
-        conn = self._get_connection
+    def get_by_id(self, user_id: int) -> Dict[str, Any] | None:
+        conn = self._get_connection()
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM users WHERE id = ?", (user_id,))
+        cursor.execute("SELECT * FROM usuarios WHERE id = ?", (user_id,))
         register = cursor.fetchone()
         conn.close()
         return dict(register) if register else None
 
     def delete(self, user_id: int) -> bool:
-        conn = self._get_connection
+        conn = self._get_connection()
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM users WHERE id = ?", (user_id,))
+        cursor.execute("DELETE FROM usuarios WHERE id = ?", (user_id,))
         conn.commit()
         register = cursor.rowcount
-        conn.close
+        conn.close()
         return register > 0
