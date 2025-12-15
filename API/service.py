@@ -22,3 +22,7 @@ class UserService:
 
     def delete_users(self, user_id: int) -> bool:
         return self.repository.delete(user_id)
+
+    def search_users_by_name(self, name: str) -> List[UserResponseSchema]:
+        users_data = self.repository.get_by_name(name)  # <- Completa esta línea
+        return [UserResponseSchema(**user) for user in users_data]

@@ -29,15 +29,15 @@ class UserRepository:
         cursor = conn.cursor()
         cursor.execute("INSERT INTO usuarios (name, age, rol) VALUES (?, ?, ?)", (name, age, rol))
         conn.commit()
-        ultimo_id = cursor.lastrowid
+        last_id = cursor.lastrowid
         conn.close()
-        return ultimo_id
+        return last_id
 
     def get_all(self) -> List[Dict[str, Any]]:
         conn = self._get_connection()
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM usuarios")
-        data = [dict(register) for register in cursor.fetchall()]
+        data = [dict(row) for row in cursor.fetchall()]
         conn.close()
         return data
 
@@ -49,6 +49,14 @@ class UserRepository:
         conn.close()
         return dict(register) if register else None
 
+    def get_by_name(self, name: str) -> List[Dict[str, Any]]:
+        conn = self._get_connection()
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM usuarios WHERE name LIKE ?", (f"%{name}%",))
+        data = [dict(row) for row in cursor.fetchall()]
+        conn.close()
+        return data
+
     def delete(self, user_id: int) -> bool:
         conn = self._get_connection()
         cursor = conn.cursor()
@@ -57,11 +65,3 @@ class UserRepository:
         register = cursor.rowcount
         conn.close()
         return register > 0
-
-    def get_by_name(self, name: str) -> List[Dict[str, Any]]:
-        conn = self._get_connection()
-        cursor = conn.cursor()
-        cursor.execute("SELECT * FROM usuarios WHERE name = ?", (name,))
-        data = [dict(register) for register in cursor.fetchall()]
-        conn.close()
-        return data
